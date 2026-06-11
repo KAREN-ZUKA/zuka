@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estructura ZUKA — Actividades Gruesas</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 2rem 1rem; }
+  .w { background: #fff; max-width: 600px; width: 100%; border-radius: 16px; padding: 2rem 1.5rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+  .badge { display: inline-block; background: #C8E000; color: #000; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; margin-bottom: 1rem; }
+  .main-title { font-size: 22px; font-weight: 600; color: #111; margin: 0 0 0.5rem; line-height: 1.25; }
+  .main-sub { font-size: 14px; color: #666; margin: 0 0 2rem; line-height: 1.7; }
+  .progress { display: flex; gap: 4px; margin-bottom: 2.5rem; }
+  .pdot { height: 3px; flex: 1; border-radius: 2px; background: #e0e0e0; transition: background 0.2s; }
+  .pdot.on { background: #C8E000; }
+  .step { display: none; }
+  .step.active { display: block; }
+  .slabel { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #aaa; margin-bottom: 0.4rem; }
+  .sq { font-size: 17px; font-weight: 600; color: #111; margin: 0 0 0.4rem; line-height: 1.35; }
+  .shint { font-size: 13px; color: #666; margin: 0 0 1.5rem; line-height: 1.7; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.5rem; }
+  .ainput { background: #fff; border: 1.5px solid #ddd; border-radius: 8px; padding: 11px 14px; font-size: 14px; color: #111; width: 100%; outline: none; transition: border-color 0.15s; }
+  .ainput:focus { border-color: #C8E000; box-shadow: 0 0 0 3px rgba(200,224,0,0.2); }
+  .ainput::placeholder { color: #bbb; }
+  .rgroup { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+  .ropt { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border: 1.5px solid #ddd; border-radius: 10px; cursor: pointer; background: #fff; transition: all 0.15s; }
+  .ropt:hover { border-color: #C8E000; }
+  .ropt.sel { border-color: #000; background: #C8E000; }
+  .ropt.sel span { color: #000; font-weight: 600; }
+  .ropt input { accent-color: #000; }
+  .ropt span { font-size: 14px; color: #111; }
+  .trow { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .tlabel { font-size: 13px; color: #666; min-width: 60px; }
+  .tsel { background: #fff; border: 1.5px solid #ddd; border-radius: 8px; padding: 9px 12px; font-size: 14px; color: #111; flex: 1; outline: none; }
+  .tsel:focus { border-color: #C8E000; }
+  .btnrow { display: flex; align-items: center; gap: 10px; margin-top: 1.5rem; }
+  .btn-p { background: #000; color: #fff; border: none; border-radius: 8px; padding: 13px 28px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+  .btn-p:hover { opacity: 0.8; }
+  .btn-s { background: transparent; color: #666; border: 1.5px solid #ddd; border-radius: 8px; padding: 13px 20px; font-size: 14px; cursor: pointer; }
+  .hcard { border: 1.5px solid #000; border-radius: 12px; overflow: hidden; margin-bottom: 1.25rem; }
+  .hhead { background: #C8E000; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
+  .hhead-title { font-size: 13px; font-weight: 700; color: #000; letter-spacing: 0.06em; text-transform: uppercase; }
+  .hhead-sub { font-size: 12px; color: #000; opacity: 0.6; }
+  .htable { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .htable th { font-size: 10px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; background: #fafafa; }
+  .htable td { padding: 12px 12px; font-size: 13px; color: #111; border-bottom: 0.5px solid #f0f0f0; vertical-align: middle; }
+  .htable tr:last-child td { border-bottom: none; }
+  .pill { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #C8E000; color: #000; }
+  .hrs-badge { display: inline-block; background: #C8E000; color: #000; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+  .otras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.5rem; }
+  .otra-chip { background: #fafafa; border: 0.5px solid #eee; border-radius: 10px; padding: 10px 14px; }
+  .otra-chip small { display: block; font-size: 10px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+  .otra-chip span { font-size: 13px; color: #111; }
+  .cta-box { background: #000; border-radius: 12px; padding: 1.5rem; margin-top: 0.5rem; }
+  .cta-box p { font-size: 14px; color: #fff; line-height: 1.9; margin: 0 0 1.25rem; }
+  .cta-btn { display: block; background: #C8E000; color: #000; border: none; border-radius: 8px; padding: 14px 26px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; text-align: center; text-decoration: none; transition: opacity 0.15s; }
+  .cta-btn:hover { opacity: 0.85; }
+  @media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } .otras-grid { grid-template-columns: 1fr; } .htable th, .htable td { padding: 8px; font-size: 11px; } }
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="badge">Método ZUKA</div>
+  <p class="main-title">Caja de Actividades Gruesas</p>
+  <p class="main-sub">Herramienta de diseño de vida y horario de alto rendimiento para emprendedoras digitales.</p>
+  <div class="progress">
+    <div class="pdot on" id="d1"></div>
+    <div class="pdot" id="d2"></div>
+    <div class="pdot" id="d3"></div>
+    <div class="pdot" id="d4"></div>
+  </div>
+  <div class="step active" id="s1">
+    <div class="slabel">Paso 1 de 4</div>
+    <p class="sq">El 80% del éxito de tu Emprendimiento Digital depende de ti.</p>
+    <p class="shint">Tu emprendimiento no va a crecer más rápido que tu ambición, claridad, tope mental y tu diseño de vida.<br><br>Nombrá tus grandes áreas de vida que ocupan un bloque importante de tu tiempo. Máximo 5. Una de ellas debe ser tu emprendimiento.</p>
+    <div class="grid2">
+      <input class="ainput" id="a1" placeholder="Ej: Emprendimiento" />
+      <input class="ainput" id="a2" placeholder="Ej: Familia" />
+      <input class="ainput" id="a3" placeholder="Ej: Salud" />
+      <input class="ainput" id="a4" placeholder="Ej: Personal" />
+      <input class="ainput" id="a5" placeholder="Ej: Estudio (opcional)" />
+    </div>
+    <div class="btnrow"><button class="btn-p" onclick="toStep2()">Continuar</button></div>
+  </div>
+  <div class="step" id="s2">
+    <div class="slabel">Paso 2 de 4</div>
+    <p class="sq">¿Cuál es tu caja de emprendimiento?</p>
+    <p class="shint">Seleccioná la actividad gruesa que representa tu negocio digital.</p>
+    <div class="rgroup" id="emp-opts"></div>
+    <div class="btnrow">
+      <button class="btn-s" onclick="goS(1)">Volver</button>
+      <button class="btn-p" onclick="toStep3()">Continuar</button>
+    </div>
+  </div>
+  <div class="step" id="s3">
+    <div class="slabel">Paso 3 de 4</div>
+    <p class="sq">¿Cuál es tu jornada laboral de lunes a viernes?</p>
+    <p class="shint">Definí a qué hora empieza y termina el tiempo de dedicación a tu Emprendimiento Digital.</p>
+    <div class="trow">
+      <span class="tlabel">Inicio</span>
+      <select class="tsel" id="h-ini">
+        <option value="6">6:00 AM</option><option value="7">7:00 AM</option>
+        <option value="8" selected>8:00 AM</option><option value="9">9:00 AM</option>
+        <option value="10">10:00 AM</option><option value="11">11:00 AM</option>
+        <option value="12">12:00 PM</option>
+      </select>
+    </div>
+    <div class="trow">
+      <span class="tlabel">Fin</span>
+      <select class="tsel" id="h-fin">
+        <option value="14">2:00 PM</option><option value="15">3:00 PM</option>
+        <option value="16">4:00 PM</option><option value="17" selected>5:00 PM</option>
+        <option value="18">6:00 PM</option><option value="19">7:00 PM</option>
+        <option value="20">8:00 PM</option>
+      </select>
+    </div>
+    <div class="btnrow">
+      <button class="btn-s" onclick="goS(2)">Volver</button>
+      <button class="btn-p" onclick="toStep4()">Ver mi estructura</button>
+    </div>
+  </div>
+  <div class="step" id="s4">
+    <div class="slabel">Tu estructura ZUKA</div>
+    <p class="sq" id="r-title"></p>
+    <p class="shint">Esta es tu distribución recomendada de lunes a viernes:</p>
+    <div class="hcard">
+      <div class="hhead">
+        <p class="hhead-title" id="h-nombre"></p>
+        <span class="hhead-sub" id="h-horas"></span>
+      </div>
+      <table class="htable">
+        <colgroup><col style="width:22%"><col style="width:22%"><col style="width:12%"><col style="width:44%"></colgroup>
+        <thead><tr><th>Horario</th><th>Actividad</th><th>Horas</th><th>Enfoque</th></tr></thead>
+        <tbody id="h-body"></tbody>
+      </table>
+    </div>
+    <div id="otras-wrap">
+      <p style="font-size:11px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 0.75rem;">Tus otras actividades gruesas</p>
+      <div class="otras-grid" id="otras-list"></div>
+    </div>
+    <div class="cta-box">
+      <p>Así que si querés <strong style="color:#C8E000">dejar de saber lo que tenés que hacer</strong> y empezar a ejecutarlo con consistencia — agendá tu <strong style="color:#C8E000">Sesión de Diagnóstico Ejecutivo ZUKA</strong>.<br><br>Te muestro cómo funciona el método por dentro. Si te gusta te hacés clienta. Si no, continuás con tu vida.</p>
+      <a class="cta-btn" href="https://calendly.com/metodozuka/llamada" target="_blank">Agendá tu sesión gratuita →</a>
+    </div>
+  </div>
+</div>
+<script>
+let empSel='';
+function fmt(h){const ap=h>=12?'PM':'AM';const h12=h>12?h-12:(h===0?12:h);return h12+':00 '+ap;}
+function getAreas(){return['a1','a2','a3','a4','a5'].map(id=>document.getElementById(id).value.trim()).filter(Boolean);}
+function toStep2(){
+  const areas=getAreas();
+  if(areas.length<2){alert('Completá al menos 2 actividades gruesas.');return;}
+  const opts=document.getElementById('emp-opts');opts.innerHTML='';empSel=areas[0];
+  areas.forEach((a,i)=>{
+    const div=document.createElement('div');div.className='ropt'+(i===0?' sel':'');
+    div.innerHTML=`<input type="radio" name="emp" value="${a}" ${i===0?'checked':''}><span>${a}</span>`;
+    div.onclick=function(){document.querySelectorAll('.ropt').forEach(el=>el.classList.remove('sel'));this.classList.add('sel');const inp=this.querySelector('input');inp.checked=true;empSel=inp.value;};
+    opts.appendChild(div);
+  });goS(2);
+}
+function toStep3(){if(!empSel){alert('Seleccioná tu caja de emprendimiento.');return;}goS(3);}
+function toStep4(){
+  const ini=parseInt(document.getElementById('h-ini').value);
+  const fin=parseInt(document.getElementById('h-fin').value);
+  const total=fin-ini;
+  if(total<4){alert('Necesitás al menos 4 horas para aplicar la estructura recomendada.');return;}
+  const bloques=[
+    {label:'Marketing',desc:'Subir 2 reel/carrusel y 1 historia al día',hs:3},
+    {label:'Ventas',desc:'Conversar, agendar, zoom, vender',hs:2},
+    {label:'Entrega del servicio',desc:'Sesiones, mentoría, programa',hs:2},
+    {label:'Operaciones',desc:'Admin, finanzas, sistemas',hs:1},
+  ];
+  const factor=total/8;const body=document.getElementById('h-body');body.innerHTML='';let hora=ini;
+  bloques.forEach(b=>{
+    const hsR=Math.max(1,Math.round(b.hs*factor));
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="white-space:nowrap;color:#666;font-size:12px">${fmt(hora)}<br>${fmt(hora+hsR)}</td><td><span class="pill">${b.label}</span></td><td><span class="hrs-badge">${hsR}h</span></td><td style="color:#666;font-size:12px;line-height:1.5">${b.desc}</td>`;
+    body.appendChild(tr);hora+=hsR;
+  });
+  document.getElementById('h-nombre').textContent=empSel.toUpperCase()+' — Lunes a Viernes';
+  document.getElementById('h-horas').textContent=total+'h diarias';
+  document.getElementById('r-title').textContent='Tu horario: '+fmt(ini)+' – '+fmt(fin);
+  const otras=getAreas().filter(a=>a!==empSel);const ol=document.getElementById('otras-list');ol.innerHTML='';
+  if(otras.length){otras.forEach(a=>{const d=document.createElement('div');d.className='otra-chip';d.innerHTML=`<small>Actividad gruesa</small><span>${a}</span>`;ol.appendChild(d);});document.getElementById('otras-wrap').style.display='block';}
+  else{document.getElementById('otras-wrap').style.display='none';}
+  goS(4);
+}
+function goS(n){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById('s'+n).classList.add('active');for(let i=1;i<=4;i++){document.getElementById('d'+i).classList.toggle('on',i<=n);}}
+</script>
+</body>
+</html>
